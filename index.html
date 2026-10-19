@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Pedidos Tacos Cheli y Carlos</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+</head>
+<body>
+<style>
+/* Layout: menú de una columna para clientes; platos arriba del menú; resumen fijo abajo con botón a WhatsApp */
+:root{
+  --bg:#f6f5f2; --surface:#ffffff; --fg:#231c18; --muted:#6b625c; --line:#e3ded8;
+  --accent:#b8321f; --accent-fg:#ffffff; --accent-soft:#fae4df;
+  --wa:#1f7a4d; --wa-fg:#ffffff; --maiz:#e8a317;
+  --display:"Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
+  --body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#161210; --surface:#211b18; --fg:#f0eae6; --muted:#a89c94; --line:#352c27;
+  --accent:#f0725d; --accent-fg:#1d0c08; --accent-soft:#3c1f19; --wa:#3fae74; --wa-fg:#0b1a11; --maiz:#f2bb45; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#161210; --surface:#211b18; --fg:#f0eae6; --muted:#a89c94; --line:#352c27;
+  --accent:#f0725d; --accent-fg:#1d0c08; --accent-soft:#3c1f19; --wa:#3fae74; --wa-fg:#0b1a11; --maiz:#f2bb45; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.45}
+.wrap{max-width:520px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 200px}
+.hero{display:grid;gap:4px;margin-bottom:8px}
+.hero small{font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-size:12px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,10vw,46px);line-height:.95;margin:0;letter-spacing:-.03em;text-wrap:balance}
+.hero p{margin:6px 0 0;color:var(--muted)}
+h2{font-family:var(--display);font-size:20px;margin:22px 0 8px}
+.platos-box{position:sticky;top:env(safe-area-inset-top,0px);z-index:2;background:var(--bg);padding-block:10px 6px;margin-top:10px}
+.platos-box .tit{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.platos-box .tit span:last-child{font-weight:500;letter-spacing:0;text-transform:none}
+.platos{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;align-items:center}
+.platos button{flex:none;display:inline-flex;align-items:center;gap:6px;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font:600 15px var(--body);cursor:pointer}
+.platos button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.platos button.nuevo{border-style:dashed;color:var(--muted)}
+.platos button.quitar{border:0;background:none;color:var(--accent);text-decoration:underline;padding:10px 6px;font-size:14px}
+.platos .c{font-size:12px;min-width:18px;padding:0 5px;border-radius:9px;background:var(--maiz);color:#231c18;font-variant-numeric:tabular-nums;text-align:center}
+.menu{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+.menu li{display:flex;align-items:center;gap:12px;padding:13px 14px;border-top:1px solid var(--line)}
+.menu li:first-child{border-top:0}
+.menu .info{flex:1;min-width:0}
+.menu .name{font-weight:600}
+.menu .price{color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
+.qty{display:flex;align-items:center;gap:8px}
+.qty button{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:700 20px var(--body);cursor:pointer}
+.qty button.add{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.qty span{min-width:20px;text-align:center;font-weight:700;font-variant-numeric:tabular-nums}
+label{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:16px 0 8px}
+input[type=text],textarea{width:100%;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:12px;padding:12px;font:16px var(--body)}
+textarea{resize:vertical;min-height:48px}
+.tipo{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.tipo button{padding:12px 8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:12px;font:600 15px var(--body);cursor:pointer}
+.tipo button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding-top:12px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.bar-in{max-width:520px;margin:0 auto;display:grid;gap:8px}
+.fila{display:flex;align-items:center;gap:12px}
+.fila .sum{flex:1;min-width:0}
+.fila .sum small{display:block;color:var(--muted);font-size:13px}
+.total{font-family:var(--display);font-weight:800;font-size:26px;font-variant-numeric:tabular-nums}
+.wa{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--wa);color:var(--wa-fg);text-decoration:none;padding:14px 18px;border-radius:14px;font-weight:700;font-size:16px}
+.wa[aria-disabled="true"]{opacity:.4;pointer-events:none}
+.alt{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;color:var(--muted);font-size:13px}
+.alt button{border:0;background:none;color:var(--accent);font:700 13px var(--body);padding:4px 0;cursor:pointer;text-decoration:underline}
+.num{font-variant-numeric:tabular-nums;user-select:all}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--maiz);outline-offset:2px}
+[hidden]{display:none!important}
+.sheet{position:fixed;inset:0;z-index:8;background:rgba(20,14,12,.55);display:flex;align-items:flex-end;justify-content:center}
+.sheet-in{width:100%;max-width:520px;max-height:88vh;overflow:auto;background:var(--surface);color:var(--fg);border-radius:20px 20px 0 0;padding-top:20px;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px));display:grid;gap:12px}
+.sheet h3{font-family:var(--display);font-size:24px;margin:0}
+.sheet p{margin:0;color:var(--muted)}
+.sheet ol{margin:0;padding-left:22px;display:grid;gap:6px}
+.sheet pre{margin:0;white-space:pre-wrap;word-break:break-word;font:14px/1.45 var(--body);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;user-select:all;max-height:30vh;overflow:auto}
+.sheet .row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sheet .sec{border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:14px;padding:14px;font:700 16px var(--body);cursor:pointer}
+.sheet .cerrar{border:0;background:none;color:var(--muted);font:600 15px var(--body);padding:8px;cursor:pointer}
+.sheet .tel{display:flex;justify-content:space-between;align-items:center;gap:8px;background:var(--bg);border-radius:12px;padding:10px 12px}
+.sheet .tel b{font-variant-numeric:tabular-nums;font-size:18px;user-select:all}
+.sheet .tel button{border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:10px;padding:8px 12px;font:600 14px var(--body);cursor:pointer}
+.toast{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;z-index:20;max-width:calc(100% - 32px);text-align:center}
+</style>
+
+<div class="wrap">
+  <div class="hero">
+    <small>Haz tu pedido</small>
+    <h1>Tacos Cheli y Carlos</h1>
+    <p>Elige lo que quieres y mándanos tu pedido por WhatsApp. Si son varias personas, separa cada plato con “+ Plato”.</p>
+  </div>
+
+  <div class="platos-box">
+    <div class="tit"><span>Platos</span><span id="enplato">Agregando al plato 1</span></div>
+    <div class="platos" id="platos"></div>
+  </div>
+
+  <div id="secciones"></div>
+
+  <label for="pnota" id="lbl-pnota">Indicaciones del plato 1</label>
+  <input type="text" id="pnota" placeholder="Ej. sin cebolla, con todo, salsa aparte">
+
+  <label for="nombre">Tu nombre</label>
+  <input type="text" id="nombre" placeholder="Para saber de quién es el pedido" autocomplete="given-name">
+  <label>¿Cómo lo quieres?</label>
+  <div class="tipo" id="tipo">
+    <button data-v="Para llevar" aria-pressed="true">Para llevar</button>
+    <button data-v="Para comer ahí" aria-pressed="false">Para comer ahí</button>
+  </div>
+  <label for="nota">Indicaciones generales</label>
+  <textarea id="nota" placeholder="Ej. paso a las 8, traigo billete de 500"></textarea>
+</div>
+
+<div class="bar">
+  <div class="bar-in">
+    <div class="fila">
+      <div class="sum"><span class="total" id="total">$0</span><small id="resumen">Agrega algo a tu pedido</small></div>
+      <a class="wa" id="wa" href="#" target="_blank" rel="noopener" aria-disabled="true">Pedir por WhatsApp</a>
+    </div>
+    <div class="alt" id="alt">Si no se abre WhatsApp: <button id="copiar">copia tu pedido</button> y mándalo al <span class="num">33 3723 8153</span></div>
+  </div>
+</div>
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheet-t">
+  <div class="sheet-in">
+    <h3 id="sheet-t">Envía tu pedido</h3>
+    <p id="sheet-estado">Tu pedido ya está copiado. Si WhatsApp no se abrió, o se abrió sin el mensaje:</p>
+    <ol>
+      <li>Abre WhatsApp y entra al chat de Tacos Cheli y Carlos.</li>
+      <li>Mantén presionado el cuadro para escribir y toca <b>Pegar</b>.</li>
+      <li>Toca enviar.</li>
+    </ol>
+    <div class="tel"><span>WhatsApp del puesto<br><b>33 3723 8153</b></span><button id="copiar-tel">Copiar número</button></div>
+    <pre id="sheet-txt"></pre>
+    <div class="row"><a class="wa" id="wa2" href="#" target="_blank" rel="noopener">Abrir WhatsApp</a><button class="sec" id="copiar2">Copiar pedido</button></div>
+    <button class="cerrar" id="cerrar">Cerrar</button>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const TEL="523337238153";
+const MENU=[
+ {c:"Tacos",n:"Taco de bisté",p:20},{c:"Tacos",n:"Taco de adobada",p:18},{c:"Tacos",n:"Taco de chorizo",p:18},
+ {c:"Tacos",n:"Taco combinado",p:18},{c:"Tacos",n:"Taco de carnaza",p:18},{c:"Tacos",n:"Taco de labio",p:20},
+ {c:"Aguas",n:"Jamaica chica",p:20},{c:"Aguas",n:"Jamaica grande",p:30}
+];
+const $=id=>document.getElementById(id);
+const money=n=>"$"+n.toLocaleString("es-MX");
+const precio=n=>MENU.find(m=>m.n===n).p;
+let platos=[{items:{},nota:""}],pi=0,tipo="Para llevar";
+const piezasDe=p=>Object.values(p.items).reduce((s,q)=>s+q,0);
+const conItems=()=>platos.filter(p=>piezasDe(p));
+
+function renderPlatos(){
+  const box=$("platos");box.innerHTML="";
+  platos.forEach((p,i)=>{
+    const b=document.createElement("button");const c=piezasDe(p);
+    b.innerHTML=`<span>Plato ${i+1}</span>${c?`<span class="c">${c}</span>`:""}`;
+    b.setAttribute("aria-pressed",i===pi);b.onclick=()=>irPlato(i);box.appendChild(b);
+  });
+  const n=document.createElement("button");n.className="nuevo";n.textContent="+ Plato";
+  n.onclick=()=>{platos.push({items:{},nota:""});irPlato(platos.length-1)};
+  box.appendChild(n);
+  if(platos.length>1&&!piezasDe(platos[pi])&&!platos[pi].nota.trim()){
+    const q=document.createElement("button");q.className="quitar";q.textContent="Quitar plato "+(pi+1);
+    q.onclick=()=>{platos.splice(pi,1);irPlato(Math.max(0,pi-1))};box.appendChild(q);
+  }
+  $("enplato").textContent=`Agregando al plato ${pi+1}`;
+  $("lbl-pnota").textContent=`Indicaciones del plato ${pi+1}`;
+}
+function irPlato(i){pi=i;$("pnota").value=platos[pi].nota;render()}
+function render(){
+  renderPlatos();
+  const items=platos[pi].items;
+  const box=$("secciones");box.innerHTML="";
+  [...new Set(MENU.map(m=>m.c))].forEach(c=>{
+    const h=document.createElement("h2");h.textContent=c;box.appendChild(h);
+    const ul=document.createElement("ul");ul.className="menu";
+    MENU.filter(m=>m.c===c).forEach(m=>{
+      const q=items[m.n]||0;
+      const li=document.createElement("li");
+      li.innerHTML=`<div class="info"><div class="name"></div><div class="price">${money(m.p)}</div></div><div class="qty">${q?`<button aria-label="Quitar uno">−</button><span>${q}</span>`:""}<button class="add" aria-label="Agregar uno">+</button></div>`;
+      li.querySelector(".name").textContent=m.n;
+      const b=li.querySelectorAll("button");
+      if(q){b[0].onclick=()=>chg(m.n,-1);b[1].onclick=()=>chg(m.n,1)}else b[0].onclick=()=>chg(m.n,1);
+      ul.appendChild(li);
+    });
+    box.appendChild(ul);
+  });
+  actualizar();
+}
+function chg(n,d){const it=platos[pi].items;it[n]=Math.max(0,(it[n]||0)+d);if(!it[n])delete it[n];render()}
+function totales(){
+  let total=0,piezas=0;
+  platos.forEach(p=>Object.entries(p.items).forEach(([n,q])=>{total+=precio(n)*q;piezas+=q}));
+  return {total,piezas};
+}
+function texto(){
+  const {total}=totales();
+  const nombre=$("nombre").value.trim();
+  const nota=$("nota").value.trim();
+  const llenos=platos.filter(p=>piezasDe(p)||p.nota.trim());
+  const varios=llenos.length>1;
+  const lineas=[];
+  llenos.forEach((p,i)=>{
+    if(varios)lineas.push(`${i?"\n":""}*Plato ${i+1}:*`);
+    Object.entries(p.items).forEach(([n,q])=>lineas.push(`• ${q} ${n} (${money(precio(n)*q)})`));
+    if(p.nota.trim())lineas.push(`  _${p.nota.trim()}_`);
+  });
+  return [`Hola${nombre?", soy "+nombre:""}. Quiero hacer un pedido ${tipo.toLowerCase()}${varios?` en ${llenos.length} platos`:""}:`,...lineas,nota?`\nIndicaciones: ${nota}`:"",`\nTotal: ${money(total)}`].filter(Boolean).join("\n");
+}
+function actualizar(){
+  const {total,piezas}=totales();
+  const np=conItems().length;
+  $("total").textContent=money(total);
+  $("resumen").textContent=piezas?`${piezas} ${piezas===1?"producto":"productos"}${np>1?` · ${np} platos`:""} · ${tipo.toLowerCase()}`:"Agrega algo a tu pedido";
+  const wa=$("wa");
+  if(piezas){wa.href=`https://wa.me/${TEL}?text=${encodeURIComponent(texto())}`;wa.setAttribute("aria-disabled","false")}
+  else{wa.href="#";wa.setAttribute("aria-disabled","true")}
+}
+function toast(m){const t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(t._h);t._h=setTimeout(()=>t.hidden=true,2200)}
+$("pnota").oninput=()=>{platos[pi].nota=$("pnota").value;renderPlatos();actualizar()};
+$("nombre").oninput=actualizar;$("nota").oninput=actualizar;
+$("tipo").querySelectorAll("button").forEach(b=>b.onclick=()=>{tipo=b.dataset.v;$("tipo").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));actualizar()});
+function copiarTexto(t){
+  // Primero el método clásico (funciona aunque el portapapeles moderno esté bloqueado), luego el moderno
+  let ok=false;
+  try{const ta=document.createElement("textarea");ta.value=t;ta.setAttribute("readonly","");ta.style.position="fixed";ta.style.top="0";ta.style.opacity="0";document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,t.length);ok=document.execCommand("copy");ta.remove()}catch(e){}
+  try{if(navigator.clipboard)navigator.clipboard.writeText(t).catch(()=>{})}catch(e){}
+  return ok;
+}
+function mostrarEnvio(copiado){
+  const t=texto();
+  $("sheet-txt").textContent=t;
+  $("wa2").href=`https://wa.me/${TEL}?text=${encodeURIComponent(t)}`;
+  $("sheet-estado").textContent=copiado?"Tu pedido ya está copiado. Si WhatsApp no se abrió, o se abrió sin el mensaje:":"Copia tu pedido con el botón de abajo. Si WhatsApp no se abrió, o se abrió sin el mensaje:";
+  $("sheet").hidden=false;
+}
+$("wa").addEventListener("click",()=>{
+  if(!totales().piezas)return;
+  const ok=copiarTexto(texto());
+  setTimeout(()=>mostrarEnvio(ok),400);
+});
+$("copiar").onclick=()=>{
+  if(!totales().piezas){toast("Primero agrega algo a tu pedido");return}
+  mostrarEnvio(copiarTexto(texto()));
+};
+$("copiar2").onclick=()=>{
+  if(copiarTexto(texto()))toast("Pedido copiado. Pégalo en WhatsApp.");
+  else{const r=document.createRange();r.selectNodeContents($("sheet-txt"));const s=getSelection();s.removeAllRanges();s.addRange(r);toast("Mantén presionado el texto y toca Copiar.")}
+};
+$("copiar-tel").onclick=()=>toast(copiarTexto("3337238153")?"Número copiado":"Mantén presionado el número para copiarlo");
+$("cerrar").onclick=()=>{$("sheet").hidden=true};
+$("sheet").onclick=e=>{if(e.target===$("sheet"))$("sheet").hidden=true};
+render();
+</script>
+
+</body>
+</html>
